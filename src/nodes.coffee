@@ -1708,7 +1708,7 @@ exports.JSXAttribute = class JSXAttribute extends Base
     @value =
       if value?
         value = value.base
-        if value instanceof StringLiteral
+        if value instanceof StringLiteral and not value.shouldGenerateTemplateLiteral()
           value
         else
           new JSXExpressionContainer value
@@ -5146,13 +5146,13 @@ exports.Parens = class Parens extends Base
 #### StringWithInterpolations
 
 exports.StringWithInterpolations = class StringWithInterpolations extends Base
-  constructor: (@body, {@quote, @startQuote} = {}) ->
+  constructor: (@body, {@quote, @startQuote, @jsxAttribute} = {}) ->
     super()
 
   @fromStringLiteral: (stringLiteral) ->
     updatedString = stringLiteral.withoutQuotesInLocationData()
     updatedStringValue = new Value(updatedString).withLocationDataFrom updatedString
-    new StringWithInterpolations Block.wrap([updatedStringValue]), quote: stringLiteral.quote
+    new StringWithInterpolations Block.wrap([updatedStringValue]), quote: stringLiteral.quote, jsxAttribute: stringLiteral.jsxAttribute
     .withLocationDataFrom stringLiteral
 
   children: ['body']
